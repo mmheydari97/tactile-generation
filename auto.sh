@@ -7,7 +7,7 @@ cd $x;
 
 mkdir -p "source" "tactile";
 
-for i in {500..1000};
+for i in {1..1000};
 do
 python draw.py;
 mv "test.jpg" "source/s_$i.jpg";
