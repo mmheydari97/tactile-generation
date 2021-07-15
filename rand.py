@@ -16,6 +16,7 @@ ax.set_axisbelow(True)
 ax.set_xticklabels('')
 ax.set_yticklabels('')
 ax.tick_params(direction='inout', length=20, width=2)
+ax.get_facecolor()
 
 
 if np.random.uniform()>0.5:
