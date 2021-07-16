@@ -11,6 +11,7 @@ PLOT_COLOR = "#"+''.join([random.choice('0123456789abcdef') for j in range(6)])
 GRID_PARAM = random.random()
 P_1D = 0.25
 FIG_SIZE = random.choices([[10,10], [10,20], [20,10]], weights=[.5, .25, .25])[0]
+CROSS = []
 
 def bezier(x, P):
     n = P.shape[0]
@@ -37,6 +38,16 @@ def draw_grids(axis):
     ax1.set_zorder(0)
     plt.grid(which='both', axis='both', color='k', linestyle='--')
 
+def on_press(event):
+    # print("my position:" ,event.button,event.xdata, event.ydata)
+    
+    if str(event.button) == "MouseButton.LEFT":
+        global CROSS
+        CROSS.append([event.xdata, event.ydata])
+    
+
+
+
 
 with plt.style.context(random.choice(plt.style.available)):
     fig1 = plt.figure(figsize=FIG_SIZE)
@@ -47,6 +58,9 @@ with plt.style.context(random.choice(plt.style.available)):
     if GRID_PARAM < 0.25:
         draw_grids(ax1)
     plt.savefig('test.jpg')
+    fig1.canvas.mpl_connect('button_press_event', on_press)
+    plt.show()
+    
     
 
 with plt.style.context('default'):
@@ -61,5 +75,8 @@ with plt.style.context('default'):
     plt.plot(b[:,0], b[:,1], zorder=1, c=PLOT_COLOR, lw=5)
     if GRID_PARAM < 0.25:
         draw_grids(ax2)
+    cross = np.array(CROSS)
+    if cross.size != 0:
+        plt.scatter(cross[:,0], cross[:,1], s=350, c=PLOT_COLOR, edgecolors='w', lw=6, zorder=2)
     plt.savefig('test.svg')
 
