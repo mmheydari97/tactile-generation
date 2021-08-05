@@ -48,4 +48,3 @@ for i in range(file_count):
             plt.scatter(cross[:,0], cross[:,1], s=350, c=PLOT_COLOR, edgecolors='w', lw=6, zorder=2)
         plt.savefig(f'./tactile/t_{i+1}.svg')
 
-    plt.close('all')
