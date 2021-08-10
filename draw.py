@@ -61,7 +61,7 @@ for i in range(file_count):
             l.set_visible(False)
         plt.plot(b[:,0], b[:,1], zorder=-1, c='w')
         if cross.size != 0:
-            plt.scatter(cross[:,0], cross[:,1], zorder=1, s=5, c='k', lw=6)
+            plt.scatter(cross[:,0], cross[:,1], zorder=1, s=5, c='k')
 
         plt.savefig(f'./mask/t_{i+1}.tif')
         plt.close('all')
