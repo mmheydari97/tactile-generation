@@ -1,9 +1,10 @@
 import os
 import random
-import sys
 import numpy as np
 import matplotlib.pyplot as plt
-from math import comb
+from PIL import Image, ImageFilter, ImageOps
+from PIL.ImageOps import invert
+from utils import expand2square
 
 
 file_count = len(next(os.walk("./points"))[2])
@@ -61,8 +62,15 @@ for i in range(file_count):
             l.set_visible(False)
         plt.plot(b[:,0], b[:,1], zorder=-1, c='w')
         if cross.size != 0:
-            plt.scatter(cross[:,0], cross[:,1], zorder=1, s=5, c='k')
+            plt.scatter(cross[:,0], cross[:,1], zorder=1, s=3, c='k')
 
-        plt.savefig(f'./mask/t_{i+1}.tif')
-        plt.close('all')
-        
+        plt.savefig(f'./mask/t_{i+1}.jpg')
+    
+    plt.close('all')
+    
+    with Image.open(f'./mask/t_{i+1}.jpg') as img:
+        img = invert(expand2square(img))
+        img = ImageOps.equalize(img, mask=None)
+        img = img.filter(ImageFilter.GaussianBlur(radius=2))
+        img.save(f'./mask/t_{i+1}.tiff')
+

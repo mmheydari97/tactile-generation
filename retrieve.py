@@ -1,23 +1,10 @@
 import numpy as np
 import matplotlib.pyplot as plt
 from PIL import Image
+from utils import expand2square
 
 
-def expand2square(pil_img):
-        width, height = pil_img.size
-        if width == height:
-            return pil_img
-        elif width > height:
-            result = Image.new(pil_img.mode, (width, width), list(pil_img.getdata())[1])
-            result.paste(pil_img, (0, (width - height) // 2))
-            return result
-        else:
-            result = Image.new(pil_img.mode, (height, height), list(pil_img.getdata())[1])
-            result.paste(pil_img, ((height - width) // 2, 0))
-            return result
-
-            
-with Image.open("./Pics/s_7.jpg") as img:
+with Image.open("./source/s_7.jpg") as img:
     
     ratio = img.getbbox()[2]/img.getbbox()[3]
     img = expand2square(img).resize((256, 256))

@@ -13,6 +13,7 @@ def on_press(event):
 file_count = len(next(os.walk("./points"))[2])
 
 for i in range(file_count):
+
     cross = []
     b = np.load(f"points/{i+1}.npy")
 
