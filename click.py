@@ -23,3 +23,6 @@ for i in range(file_count):
     plt.show()
 
     np.save(f"./intersections/{i+1}.npy", np.array(cross))
+    print(f"intersections {i+1} created.")
+    if i%10 == 0:
+        plt.close('all')
