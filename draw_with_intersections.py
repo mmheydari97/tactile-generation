@@ -4,16 +4,13 @@ import numpy as np
 import matplotlib.pyplot as plt
 from PIL import Image, ImageFilter, ImageOps
 from PIL.ImageOps import invert
-from utils import expand2square
+from utils import expand2square, draw_grids
 
 
 file_count = len(next(os.walk("./intersections"))[2])
 np_load_old = np.load
 np.load = lambda *a,**k: np_load_old(*a, allow_pickle=True, **k)
 
-def draw_grids(ax, **kwargs):
-    ax.set_zorder(0)
-    plt.grid(which='both', axis='both', **kwargs)
     
 for i in range(file_count):
     PLOT_COLOR = "#"+''.join([random.choice('0123456789abcdef') for j in range(6)])

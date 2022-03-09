@@ -13,3 +13,8 @@ def expand2square(pil_img):
             result = Image.new(pil_img.mode, (height, height), list(pil_img.getdata())[1])
             result.paste(pil_img, ((height - width) // 2, 0))
             return result
+
+
+def draw_grids(ax, **kwargs):
+    ax.set_zorder(0)
+    plt.grid(which='both', axis='both', **kwargs)

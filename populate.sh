@@ -9,7 +9,7 @@ mkdir -p "source" "tactile";
 
 for i in {1..100};
 do
-python draw.py;
+python draw_with_intersections.py;
 mv "test.jpg" "source/s_$i.jpg";
 mv "test.svg" "tactile/t_$i.svg";
 done
