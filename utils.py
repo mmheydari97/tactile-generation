@@ -36,9 +36,15 @@ def _mplfig_to_npimage(fig):
     return image.reshape(h,w,3)
 
 
-def figure2mask(fig, shape=(256, 256), thresh=250):
+def figure2mask(fig, shape=(256, 256), thresh=240):
     data = _mplfig_to_npimage(fig)
     im = Image.fromarray(data).convert("L")
     im = im.point( lambda p: 0 if p < thresh else 255)
     im = invert(expand2square(im)).resize(shape, resample=Image.LANCZOS).convert("1")
     return np.uint8(im)
+
+def figure2image(fig, shape=(256, 256)):
+    data = _mplfig_to_npimage(fig)
+    im = Image.fromarray(data).convert("RGB")
+    im = expand2square(im).resize(shape, resample=Image.LANCZOS)
+    return im
