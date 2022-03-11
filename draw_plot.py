@@ -23,16 +23,14 @@ def draw_pair(color, grid_param=0.4, figsize=(5,5), filename=None, **kwargs):
         if "bezier" in kwargs:
             b = kwargs["bezier"]
             plt.plot(b[:,0], b[:,1], c=color)
-            ax.set(ylim=(np.min(b[:,1])*0.8, np.max(b[:,1])*1.2))
+
         if "scatter" in kwargs and kwargs["scatter"] is not None:
             points = kwargs["scatter"]
             plt.scatter(points[:,0], points[:,1], s=50, c=color, zorder=3)
-            ax.set(ylim=(np.min(points[:,1])*0.8, np.max(points[:,1])*1.2))
 
         if "polygon" in kwargs:
             polygon = kwargs["polygon"]
             plt.fill(polygon[:,0], polygon[:,1], fc=f"{color}33", ec=color)
-            ax.set(ylim=(np.min(polygon[:,1])*0.8, np.max(polygon[:,1])*1.2))
 
         if grid_p < grid_param:
             draw_grids(ax)
@@ -72,18 +70,14 @@ def draw_pair(color, grid_param=0.4, figsize=(5,5), filename=None, **kwargs):
         if "bezier" in kwargs:
             b = kwargs["bezier"]
             plt.plot(b[:,0], b[:,1], c="w", lw=1)
-            ax.set(ylim=(np.min(b[:,1])*0.8, np.max(b[:,1])*1.2))
 
         if "scatter" in kwargs and kwargs["scatter"] is not None:
             points = kwargs["scatter"]
             plt.scatter(points[:,0], points[:,1], s=1, c="w")
-            ax.set(ylim=(np.min(points[:,1])*0.8, np.max(points[:,1])*1.2))
-
 
         if "polygon" in kwargs:
             polygon = kwargs["polygon"]
             plt.fill(polygon[:,0], polygon[:,1], fc="#ffffff00", ec="w")
-            ax.set(ylim=(np.min(polygon[:,1])*0.8, np.max(polygon[:,1])*1.2))
 
         
         ax.spines['left'].set_position('zero')
@@ -144,23 +138,23 @@ def draw_pair(color, grid_param=0.4, figsize=(5,5), filename=None, **kwargs):
 #     ps = b[0::b.shape[0]//pointidx,:] if pointidx > 0 else None
 #     draw_pair(PLOT_COLOR,GRID_PARAM,FIG_SIZE, f"{i+1}", bezier=b, scatter=ps)
     
-# for i in range(10, 20):
-#     PLOT_COLOR = "#"+''.join([random.choice('0123456789abcdef') for _ in range(6)])
-#     GRID_PARAM = random.random()
-#     FIG_SIZE = random.choices([[5,5], [2.5,5], [5,2.5]], weights=[.5, .25, .25])[0]
+for i in range(10, 20):
+    PLOT_COLOR = "#"+''.join([random.choice('0123456789abcdef') for _ in range(6)])
+    GRID_PARAM = random.random()
+    FIG_SIZE = random.choices([[5,5], [2.5,5], [5,2.5]], weights=[.5, .25, .25])[0]
 
-#     ps = generate_polygon(center=(random.random()/2-0.25, random.random()/2-0.25),
-#                         avg_radius=0.1,
-#                         irregularity=0.2,
-#                         spikiness=0.05,
-#                         num_vertices=np.random.randint(3,10))
-#     draw_pair(PLOT_COLOR,GRID_PARAM,FIG_SIZE, f"{i+1}", scatter=ps, polygon=ps)
+    ps = generate_polygon(center=(random.random()/2-.25, random.random()/2-.25),
+                        avg_radius=1.5,
+                        irregularity=0.1,
+                        spikiness=0.05,
+                        num_vertices=np.random.randint(3,10))
+    draw_pair(PLOT_COLOR,GRID_PARAM,FIG_SIZE, f"{i+1}", scatter=ps, polygon=ps)
 
 for i in range(20, 30):
     PLOT_COLOR = "#"+''.join([random.choice('0123456789abcdef') for _ in range(6)])
     GRID_PARAM = random.random()
     FIG_SIZE = random.choices([[5,5], [2.5,5], [5,2.5]], weights=[.5, .25, .25])[0]
-    idx = np.random.randint(3,50)
+    idx = np.random.randint(2,20)
 
     ps = np.array([[random.random()*100-50, random.random()*100-50] for _ in range(idx)])
     draw_pair(PLOT_COLOR,GRID_PARAM,FIG_SIZE, f"{i+1}", scatter=ps)
