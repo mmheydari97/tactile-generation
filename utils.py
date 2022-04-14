@@ -43,8 +43,7 @@ def figure2mask(fig, shape=(256, 256), thresh=240):
     im = invert(expand2square(im)).resize(shape, resample=Image.LANCZOS).convert("1")
     return np.uint8(im)
 
-def figure2image(fig, shape=(256, 256)):
-    data = _mplfig_to_npimage(fig)
-    im = Image.fromarray(data).convert("RGB")
-    im = expand2square(im).resize(shape, resample=Image.LANCZOS)
-    return im
+def postprocessing(fname, shape=(256, 256)):
+    img = Image.open(fname)
+    img = expand2square(img).resize(shape, resample=Image.LANCZOS)
+    img.save(fname)
