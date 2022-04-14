@@ -11,7 +11,7 @@ np.load = lambda *a,**k: np_load_old(*a, allow_pickle=True, **k)
 
 
 def draw_pair(color, grid_param=0.4, figsize=(5,5), filename=None, **kwargs):
-    grid_p = 0#np.random.rand() 
+    grid_p = np.random.rand() 
     # plot source image
     with plt.style.context('default'):
     
