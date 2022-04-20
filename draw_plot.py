@@ -11,7 +11,7 @@ np.load = lambda *a,**k: np_load_old(*a, allow_pickle=True, **k)
 
 
 def draw_pair(color, grid_param=0.4, figsize=(5,5), filename=None, **kwargs):
-    grid_p = 0 # np.random.rand() 
+    grid_p = np.random.rand() 
     # plot source image
     with plt.style.context('default'):
     
@@ -127,7 +127,7 @@ def draw_pair(color, grid_param=0.4, figsize=(5,5), filename=None, **kwargs):
         maskgen(f'./tactile/t_{filename}.png')
 
     
-for i in range(20):
+for i in range(2000):
     PLOT_COLOR = "#"+''.join([random.choice('0123456789abcdef') for _ in range(6)])
     GRID_PARAM = random.random()
     FIG_SIZE = random.choices([[5,5], [2.5,5], [5,2.5]], weights=[.5, .25, .25])[0]
@@ -136,7 +136,7 @@ for i in range(20):
     ps = b[0::b.shape[0]//pointidx,:] if pointidx > 0 else None
     draw_pair(PLOT_COLOR,GRID_PARAM,FIG_SIZE, f"{i+1}", bezier=b, scatter=ps)
     
-for i in range(20, 35):
+for i in range(2000, 3500):
     PLOT_COLOR = "#"+''.join([random.choice('0123456789abcdef') for _ in range(6)])
     GRID_PARAM = random.random()
     FIG_SIZE = random.choices([[5,5], [2.5,5], [5,2.5]], weights=[.5, .25, .25])[0]
@@ -148,7 +148,7 @@ for i in range(20, 35):
                         num_vertices=np.random.randint(3,10))
     draw_pair(PLOT_COLOR,GRID_PARAM,FIG_SIZE, f"{i+1}", scatter=ps, polygon=ps)
 
-for i in range(35, 50):
+for i in range(3500, 5000):
     PLOT_COLOR = "#"+''.join([random.choice('0123456789abcdef') for _ in range(6)])
     GRID_PARAM = random.random()
     FIG_SIZE = random.choices([[5,5], [2.5,5], [5,2.5]], weights=[.5, .25, .25])[0]
