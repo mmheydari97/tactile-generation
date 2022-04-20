@@ -1,7 +1,8 @@
+import os
 import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_agg import FigureCanvasAgg
-from PIL import Image
+from PIL import Image, ImageFilter
 from PIL.ImageOps import invert
 
 
@@ -36,15 +37,31 @@ def _mplfig_to_npimage(fig):
     return image.reshape(h,w,3)
 
 
-def figure2mask(fig, shape=(256, 256), thresh=240):
-    data = _mplfig_to_npimage(fig)
-    im = Image.fromarray(data).convert("L")
-    im = im.point( lambda p: 0 if p < thresh else 255)
-    im = invert(expand2square(im)).resize(shape, resample=Image.LANCZOS).convert("1")
-    return np.uint8(im)
+def maskgen(fname, shape=(256, 256), thresh=109):
+    fname_parts = fname.split('.')
+    msk_axes = Image.open(f".{fname_parts[-2]}_axes.{fname_parts[-1]}").convert('L')
+    msk_grids = Image.open(f".{fname_parts[-2]}_grids.{fname_parts[-1]}").convert('L')
+    msk_content = Image.open(f".{fname_parts[-2]}_content.{fname_parts[-1]}").convert('L')
+    
+    msk_axes = np.asarray(expand2square(invert(msk_axes)).resize(shape, resample=Image.LANCZOS).point(lambda x: 0 if x < thresh else 255).filter(ImageFilter.DETAIL()).convert('1')) 
+    msk_grids = np.asarray(expand2square(invert(msk_grids)).resize(shape, resample=Image.LANCZOS).point(lambda x: 0 if x < thresh else 255).filter(ImageFilter.DETAIL()).convert('1'))
+    msk_content = np.asarray(expand2square(invert(msk_content)).resize(shape, resample=Image.LANCZOS).point(lambda x: 0 if x < thresh else 255).filter(ImageFilter.DETAIL()).convert('1'))
 
-def figure2image(fig, shape=(256, 256)):
-    data = _mplfig_to_npimage(fig)
-    im = Image.fromarray(data).convert("RGB")
-    im = expand2square(im).resize(shape, resample=Image.LANCZOS)
-    return im
+    res = np.zeros(msk_content.shape)
+    res = msk_content*3
+    res[(msk_grids>0) & (msk_content==0)] = 2
+    res[(msk_axes>0) & (msk_content==0)] = 1
+    im_res = Image.fromarray(res.astype(np.uint8), mode="L")
+    
+    os.remove(f".{fname_parts[-2]}_axes.{fname_parts[-1]}")
+    os.remove(f".{fname_parts[-2]}_grids.{fname_parts[-1]}")
+    os.remove(f".{fname_parts[-2]}_content.{fname_parts[-1]}")
+
+    im_res.save(f".{fname_parts[-2]}.tiff")
+    
+
+
+def postprocessing(fname, shape=(256, 256)):
+    img = Image.open(fname)
+    img = expand2square(img).resize(shape, resample=Image.LANCZOS)
+    img.save(fname)
