@@ -37,7 +37,7 @@ def _mplfig_to_npimage(fig):
     return image.reshape(h,w,3)
 
 
-def maskgen(fname, shape=(256, 256), thresh=109):
+def maskgen(fname, shape=(256, 256), thresh=100):
     fname_parts = fname.split('.')
     msk_axes = Image.open(f".{fname_parts[-2]}_axes.{fname_parts[-1]}").convert('L')
     msk_grids = Image.open(f".{fname_parts[-2]}_grids.{fname_parts[-1]}").convert('L')

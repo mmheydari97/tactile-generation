@@ -17,8 +17,10 @@ def draw_pair(color, grid_param=0.4, figsize=(5,5), filename=None, **kwargs):
     
         fig = plt.figure(figsize=figsize)
         ax = plt.gca()
-        ax.set_xticklabels('')
-        ax.set_yticklabels('')
+        bg_color = "#"+''.join([random.choice('0123456789abcdef') for _ in range(6)])
+        ax.set_facecolor(f'{bg_color}11')
+        # ax.set_xticklabels('')
+        # ax.set_yticklabels('')
 
         ax.spines['right'].set_visible(False)
         ax.spines['top'].set_visible(False)
