@@ -37,27 +37,19 @@ def _mplfig_to_npimage(fig):
     return image.reshape(h,w,3)
 
 
-def maskgen(fname, shape=(256, 256), thresh=100):
+def maskgen(fname, shape=(256, 256)):
     fname_parts = fname.split('.')
     msk_axes = Image.open(f".{fname_parts[-2]}_axes.{fname_parts[-1]}").convert('L')
     msk_grids = Image.open(f".{fname_parts[-2]}_grids.{fname_parts[-1]}").convert('L')
     msk_content = Image.open(f".{fname_parts[-2]}_content.{fname_parts[-1]}").convert('L')
     
-    msk_axes = np.asarray(expand2square(invert(msk_axes)).resize(shape, resample=Image.LANCZOS).point(lambda x: 0 if x < thresh else 255).filter(ImageFilter.DETAIL()).convert('1')) 
-    msk_grids = np.asarray(expand2square(invert(msk_grids)).resize(shape, resample=Image.LANCZOS).point(lambda x: 0 if x < thresh else 255).filter(ImageFilter.DETAIL()).convert('1'))
-    msk_content = np.asarray(expand2square(invert(msk_content)).resize(shape, resample=Image.LANCZOS).point(lambda x: 0 if x < thresh else 255).filter(ImageFilter.DETAIL()).convert('1'))
+    msk_axes = expand2square(invert(msk_axes)).resize(shape, resample=Image.LANCZOS)
+    msk_grids = expand2square(invert(msk_grids)).resize(shape, resample=Image.LANCZOS)
+    msk_content = expand2square(invert(msk_content)).resize(shape, resample=Image.LANCZOS)
 
-    res = np.zeros(msk_content.shape)
-    res = msk_content*3
-    res[(msk_grids>0) & (msk_content==0)] = 2
-    res[(msk_axes>0) & (msk_content==0)] = 1
-    im_res = Image.fromarray(res.astype(np.uint8), mode="L")
-    
-    os.remove(f".{fname_parts[-2]}_axes.{fname_parts[-1]}")
-    os.remove(f".{fname_parts[-2]}_grids.{fname_parts[-1]}")
-    os.remove(f".{fname_parts[-2]}_content.{fname_parts[-1]}")
-
-    im_res.save(f".{fname_parts[-2]}.tiff")
+    msk_axes.save(f".{fname_parts[-2]}_axes.tiff")
+    msk_grids.save(f".{fname_parts[-2]}_grids.tiff")
+    msk_content.save(f".{fname_parts[-2]}_content.tiff")
     
 
 

@@ -56,7 +56,7 @@ def draw_pair(color, grid_param=0.4, figsize=(5,5), filename=None, **kwargs):
             draw_grids(ax)
        
         
-        fig.savefig(f'./source/s_{filename}.png', dpi=300)
+        fig.savefig(f'./source/s_{filename}.png', dpi=75)
         postprocessing(f'./source/s_{filename}.png')
         plt.close('all')
 
@@ -74,15 +74,15 @@ def draw_pair(color, grid_param=0.4, figsize=(5,5), filename=None, **kwargs):
 
         if "bezier" in kwargs:
             b = kwargs["bezier"]
-            plt.plot(b[:,0], b[:,1], c="w", lw=1)
+            plt.plot(b[:,0], b[:,1], c="w", lw=1, zorder=0)
 
         if "scatter" in kwargs and kwargs["scatter"] is not None:
             points = kwargs["scatter"]
-            plt.scatter(points[:,0], points[:,1], s=1, c="w")
+            plt.scatter(points[:,0], points[:,1], s=1, c="w", zorder=0)
 
         if "polygon" in kwargs:
             polygon = kwargs["polygon"]
-            plt.fill(polygon[:,0], polygon[:,1], fc="#ffffff00", ec="w")
+            plt.fill(polygon[:,0], polygon[:,1], fc="#ffffff00", ec="w", zorder=0)
 
         
         ax.spines['left'].set_position('zero')
@@ -97,7 +97,7 @@ def draw_pair(color, grid_param=0.4, figsize=(5,5), filename=None, **kwargs):
         ax.plot((0), (1), ls="", marker="^", ms=10, color="k",
         transform=ax.get_xaxis_transform(), clip_on=False, zorder=2)
 
-        fig.savefig(f'./tactile/t_{filename}_axes.png', dpi=300)
+        fig.savefig(f'./tactile/t_{filename}_axes.tiff', dpi=75)
         
         ax.tick_params(color="w")
         ax.spines['left'].set_color('w')
@@ -106,12 +106,14 @@ def draw_pair(color, grid_param=0.4, figsize=(5,5), filename=None, **kwargs):
         transform=ax.get_yaxis_transform(), clip_on=False)
         ax.plot((0), (1), ls="", marker="^", ms=11, color="w",
         transform=ax.get_xaxis_transform(), clip_on=False)
+        ax.tick_params(direction='inout', length=20, width=2)
+
         
 
         if grid_p < grid_param:
             draw_grids(ax, color='k', linestyle='--', linewidth=1)
         
-        fig.savefig(f'./tactile/t_{filename}_grids.png', dpi=300)
+        fig.savefig(f'./tactile/t_{filename}_grids.tiff', dpi=75)
         plt.grid(False)
 
 
@@ -125,8 +127,8 @@ def draw_pair(color, grid_param=0.4, figsize=(5,5), filename=None, **kwargs):
             plt.fill(polygon[:,0], polygon[:,1], fc="#ffffff00", ec='k', lw=4, zorder=3)
 
 
-        fig.savefig(f'./tactile/t_{filename}_content.png', dpi=300)
-        maskgen(f'./tactile/t_{filename}.png')
+        fig.savefig(f'./tactile/t_{filename}_content.tiff', dpi=75)
+        maskgen(f'./tactile/t_{filename}.tiff')
 
     
 for i in range(2000):
