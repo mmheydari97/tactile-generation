@@ -133,7 +133,7 @@ def draw_pair(color, grid_param=0.4, figsize=(5,5), filename=None, **kwargs):
     
 for i in range(2000):
     PLOT_COLOR = "#"+''.join([random.choice('0123456789abcdef') for _ in range(6)])
-    GRID_PARAM = random.random()
+    GRID_PARAM = 0.4
     FIG_SIZE = random.choices([[5,5], [2.5,5], [5,2.5]], weights=[.5, .25, .25])[0]
     b = np.load(f"./points/{i+1}.npy")
     pointidx = np.random.randint(10)
@@ -142,7 +142,7 @@ for i in range(2000):
     
 for i in range(2000, 3500):
     PLOT_COLOR = "#"+''.join([random.choice('0123456789abcdef') for _ in range(6)])
-    GRID_PARAM = random.random()
+    GRID_PARAM = 0.4
     FIG_SIZE = random.choices([[5,5], [2.5,5], [5,2.5]], weights=[.5, .25, .25])[0]
 
     ps = generate_polygon(center=(random.random()*2-1, random.random()*2-1),
@@ -154,7 +154,7 @@ for i in range(2000, 3500):
 
 for i in range(3500, 5000):
     PLOT_COLOR = "#"+''.join([random.choice('0123456789abcdef') for _ in range(6)])
-    GRID_PARAM = random.random()
+    GRID_PARAM = 0.4
     FIG_SIZE = random.choices([[5,5], [2.5,5], [5,2.5]], weights=[.5, .25, .25])[0]
     idx = np.random.randint(2,20)
 
