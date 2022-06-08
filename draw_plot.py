@@ -2,7 +2,6 @@ import os
 import random
 import numpy as np
 import matplotlib.pyplot as plt
-from PIL import Image
 from weakref import ref
 from utils import draw_grids, postprocessing, maskgen
 from polygon_gen import generate_polygon
