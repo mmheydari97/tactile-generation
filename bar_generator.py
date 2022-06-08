@@ -14,6 +14,7 @@ import plotly.graph_objs as go
 import plotly.io as pio
 import plotly.io._orca
 
+tf.get_logger().setLevel('ERROR')
 
 # Launch orca
 unwrapped = plotly.io._orca.request_image_with_retrying.__wrapped__
@@ -333,9 +334,10 @@ def write_source_data(data, filepath, figsize=(512, 512), draw_grid=False, tick_
                 "ticks": "outside",
                 "dtick": tick_step
             })
-
+            
+    fig.update_yaxes(showgrid=False)
     if draw_grid:
-        fig.update_yaxes(showgrid=True, gridcolor='gray', gridwidth=1)
+        fig.update_yaxes(showgrid=True, gridcolor='#aaaaaa', gridwidth=1)
 
     pio.write_image(fig=fig, file=filepath, format="png", width=figsize[0], height=figsize[1])
     

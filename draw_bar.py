@@ -4,7 +4,7 @@ import pandas as pd
 import tensorflow as tf
 
 from bar_generator import generate_data, write_source_data, write_circle_target_data, serialize_data
-
+from utils import postprocessing, maskgen
 
 NUM_SAMPLES = 10
 P_grid = 0.4
@@ -25,11 +25,12 @@ with tf.device('/device:GPU:0'):
         tick_step = random.randint(10, 16)
 
         write_source_data(data[i], f"./data/source/s_{i+1}.png", fig_size, draw_grid, tick_step)
-
+        postprocessing(f"./data/source/s_{i+1}.png")
+        
         print(f"\t== Writing tactile file: {i+1}")
-        write_circle_target_data(circle_data[i], f"data/tactile/t_{i+1}.png", fig_size, draw_grid, tick_step)
-
-
+        write_circle_target_data(circle_data[i], f"./data/tactile/t_{i+1}.png", fig_size, draw_grid, tick_step)
+        maskgen(f"./data/tactile/t_{i+1}.png")
+        
     metadata_df = serialize_data(metadata, ["x", "y"])
     metadata_df.to_csv("metadata.csv", index=False)
 

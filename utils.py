@@ -38,18 +38,22 @@ def _mplfig_to_npimage(fig):
 
 
 def maskgen(fname, shape=(256, 256)):
-    fname_parts = fname.split('.')
-    msk_axes = Image.open(f".{fname_parts[-2]}_axes.{fname_parts[-1]}").convert('L')
-    msk_grids = Image.open(f".{fname_parts[-2]}_grids.{fname_parts[-1]}").convert('L')
-    msk_content = Image.open(f".{fname_parts[-2]}_content.{fname_parts[-1]}").convert('L')
+    fname_parts = fname.rsplit('.', 1)
+    msk_axes = Image.open(f"{fname_parts[0]}_axes.{fname_parts[1]}").convert('L')
+    msk_grids = Image.open(f"{fname_parts[0]}_grids.{fname_parts[1]}").convert('L')
+    msk_content = Image.open(f"{fname_parts[0]}_content.{fname_parts[1]}").convert('L')
     
     msk_axes = expand2square(invert(msk_axes)).resize(shape, resample=Image.LANCZOS)
     msk_grids = expand2square(invert(msk_grids)).resize(shape, resample=Image.LANCZOS)
     msk_content = expand2square(invert(msk_content)).resize(shape, resample=Image.LANCZOS)
-
-    msk_axes.save(f".{fname_parts[-2]}_axes.tiff")
-    msk_grids.save(f".{fname_parts[-2]}_grids.tiff")
-    msk_content.save(f".{fname_parts[-2]}_content.tiff")
+    
+    os.remove(f"{fname_parts[0]}_axes.{fname_parts[1]}")
+    os.remove(f"{fname_parts[0]}_grids.{fname_parts[1]}")
+    os.remove(f"{fname_parts[0]}_content.{fname_parts[1]}")
+    
+    msk_axes.save(f"{fname_parts[0]}_axes.tiff")
+    msk_grids.save(f"{fname_parts[0]}_grids.tiff")
+    msk_content.save(f"{fname_parts[0]}_content.tiff")
     
 
 
