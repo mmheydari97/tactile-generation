@@ -324,12 +324,12 @@ def write_source_data(data, filepath, figsize=(512, 512), draw_grid=False, tick_
         showlegend=False,
         xaxis={
                 "showline": True, 
-                "linewidth": 1, 
+                "linewidth": 2, 
                 "linecolor": 'black',
             },
         yaxis={
                 "showline": True, 
-                "linewidth": 1, 
+                "linewidth": 2, 
                 "linecolor": 'black',
                 "ticks": "outside",
                 "dtick": tick_step
@@ -365,14 +365,14 @@ def write_circle_target_data(data, filepath, figsize=(512, 512), draw_grid=False
         width=figsize[0], height=figsize[1],
         yaxis_range=[0,110],
         xaxis_range=[-0.5,10],
-        xaxis={"showticklabels": False, "linecolor": 'black'},
-        yaxis={"showticklabels": False, "linecolor": 'black', "ticks": "outside", "dtick": tick_step, "ticklen": 10, "tickwidth": 2},
+        xaxis={"showticklabels": False, "linewidth": 2, "linecolor": 'black'},
+        yaxis={"showticklabels": False, "linewidth": 2, "linecolor": 'black', "ticks": "outside", "dtick": tick_step, "ticklen": 10, "tickwidth": 2},
         showlegend=False
     )    
     pio.write_image(fig=fig, file=f"{fp_parts[0]}_axes.{fp_parts[1]}", format="png", width=figsize[0], height=figsize[1])
 
     if draw_grid:
-        fig.update_yaxes(showgrid=True, gridcolor='black', griddash='dash')
+        fig.update_yaxes(showgrid=True, gridcolor='black', griddash='dash', gridwidth=1)
     fig.update_layout(xaxis={"linecolor": 'white'}, yaxis={"linecolor": 'white', "ticklen": 0, "tickwidth": 0})
     pio.write_image(fig=fig, file=f"{fp_parts[0]}_grids.{fp_parts[1]}", format="png", width=figsize[0], height=figsize[1])
 
