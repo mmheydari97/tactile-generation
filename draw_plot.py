@@ -1,8 +1,11 @@
+import argparse
 import os
 import random
 import numpy as np
 import matplotlib.pyplot as plt
+from tqdm import tqdm
 from weakref import ref
+
 from utils import draw_grids, postprocessing, maskgen
 from polygon_gen import generate_polygon
 
@@ -101,7 +104,7 @@ def draw_pair(color, grid_param=0.4, figsize=(5,5), filename=None, **kwargs):
         ax.tick_params(direction='inout', length=0, width=0, zorder=3)
         ax.lines.remove(wr1())
         ax.lines.remove(wr2())
-        for k, item in ax.spines.items():
+        for _, item in ax.spines.items():
             item.set_visible(False)
 
         if grid_p < grid_param:
@@ -127,36 +130,55 @@ def draw_pair(color, grid_param=0.4, figsize=(5,5), filename=None, **kwargs):
 
 
 if __name__ == "__main__":
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--cnt_bezier", type=int, default=2000, help="number of bezier curves")
+    parser.add_argument("--cnt_scatter", type=int, default=1500, help="number of scatter points")
+    parser.add_argument("--cnt_polygon", type=int, default=1500, help="number of polygons")
+    parser.add_argument("--p_figsize", nargs=3, type=float, default=[.5, .25, .25], help="figure size probabilities")
+    parser.add_argument("--p_1D", type=float, default=0.4, help="probability of 1D bezeir generation")
+    parser.add_argument("--p_grid", type=float, default=0.4, help="probability of drawing grid")
+
+    opt = parser.parse_args()
+
     os.makedirs('./source', exist_ok=True)
     os.makedirs('./tactile', exist_ok=True)
 
-    for i in range(2000):
-        PLOT_COLOR = "#"+''.join([random.choice('0123456789abcdef') for _ in range(6)])
-        GRID_PARAM = 0.4
-        FIG_SIZE = random.choices([[5,5], [2.5,5], [5,2.5]], weights=[.5, .25, .25])[0]
+    lim_bezier = opt.cnt_bezier
+    lim_polygon = opt.cnt_bezier + opt.cnt_polygon
+    lim_scatter = opt.cnt_bezier + opt.cnt_polygon + opt.cnt_scatter
+
+    for i in tqdm(range(lim_bezier), desc="bezier curves"):
+        clr = "#"+''.join([random.choice('0123456789abcdef') for _ in range(6)])
+        fig_size = random.choices([[5,5], [2.5,5], [5,2.5]], weights=opt.p_figsize)[0]
+        
+        # uncomment to generate fresh bezier data
+        # x = np.linspace(0, 1, 10000).reshape(-1,1)
+        # p = np.array([[random.randint(-20,20), random.randint(-20,20)] for i in range(random.randint(2,20))])
+        # if random.random() <= opt.p_1D:
+        #     p = p.reshape(-1,1).flatten()[::2]
+        # b = generate_bezier(x, p)
+        
         b = np.load(f"./points/{i+1}.npy")
         pointidx = np.random.randint(10)
         ps = b[0::b.shape[0]//pointidx,:] if pointidx > 0 else None
-        draw_pair(PLOT_COLOR,GRID_PARAM,FIG_SIZE, f"{i+1}", bezier=b, scatter=ps)
+        draw_pair(clr,opt.p_grid,fig_size, f"{i+1}", bezier=b, scatter=ps)
+
         
-    for i in range(2000, 3500):
-        PLOT_COLOR = "#"+''.join([random.choice('0123456789abcdef') for _ in range(6)])
-        GRID_PARAM = 0.4
-        FIG_SIZE = random.choices([[5,5], [2.5,5], [5,2.5]], weights=[.5, .25, .25])[0]
+    for i in tqdm(range(lim_bezier, lim_polygon), desc="polygons"):
+        clr = "#"+''.join([random.choice('0123456789abcdef') for _ in range(6)])
+        fig_size = random.choices([[5,5], [2.5,5], [5,2.5]], weights=opt.p_figsize)[0]
 
         ps = generate_polygon(center=(random.random()*2-1, random.random()*2-1),
                             avg_radius=1.5,
                             irregularity=0.2,
                             spikiness=0.1,
                             num_vertices=np.random.randint(3,10))
-        draw_pair(PLOT_COLOR,GRID_PARAM,FIG_SIZE, f"{i+1}", scatter=ps, polygon=ps)
+        draw_pair(clr,opt.p_grid,fig_size, f"{i+1}", scatter=ps, polygon=ps)
 
-    for i in range(3500, 5000):
-        PLOT_COLOR = "#"+''.join([random.choice('0123456789abcdef') for _ in range(6)])
-        GRID_PARAM = 0.4
-        FIG_SIZE = random.choices([[5,5], [2.5,5], [5,2.5]], weights=[.5, .25, .25])[0]
+
+    for i in tqdm(range(lim_polygon, lim_scatter), desc="scatter plots"):
+        clr = "#"+''.join([random.choice('0123456789abcdef') for _ in range(6)])
+        fig_size = random.choices([[5,5], [2.5,5], [5,2.5]], weights=opt.p_figsize)[0]
         idx = np.random.randint(2,20)
-
         ps = np.array([[random.random()*100-50, random.random()*100-50] for _ in range(idx)])
-        draw_pair(PLOT_COLOR,GRID_PARAM,FIG_SIZE, f"{i+1}", scatter=ps)
-        plt.close('all')
+        draw_pair(clr,opt.p_grid,fig_size, f"{i+1}", scatter=ps)
