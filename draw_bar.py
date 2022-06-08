@@ -6,7 +6,7 @@ import tensorflow as tf
 from bar_generator import generate_data, write_source_data, write_circle_target_data, serialize_data
 from utils import postprocessing, maskgen
 
-NUM_SAMPLES = 10
+NUM_SAMPLES = 5000
 P_grid = 0.4
 
 os.makedirs("./data/source", exist_ok=True)
