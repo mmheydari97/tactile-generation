@@ -9,6 +9,7 @@ import numpy as np
 import pandas as pd
 import retrying
 import tensorflow as tf
+from tqdm import tqdm
 
 import plotly.graph_objs as go
 import plotly.io as pio
@@ -59,12 +60,9 @@ def generate_data(num_samples = 1):
     metadata = list()
     circle_data = list()
     
-    for i in range(num_samples):
-        print("== Generating plot " + str(i))
+    for i in tqdm(range(num_samples), desc="generating metadata: "):
         
         sample = {}
-        
-        print("\t== Generating metadata")
         
         sample_metadata = generate_metadata()
         
@@ -78,8 +76,6 @@ def generate_data(num_samples = 1):
         max_x = np.amax(sample["x_values"])
         min_y = np.amin(sample["y_values"])
         max_y = np.amax(sample["y_values"])
-        
-        print("\t== Generating syles")
         
         sample_styles = generate_styles(num_bars=num_bars, num_groups = num_groups, min_x=min_x, max_x=max_x, min_y=min_y, max_y=max_y)
         
