@@ -3,7 +3,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_agg import FigureCanvasAgg
 from PIL import Image, ImageFilter
-from PIL.ImageOps import invert
+from PIL.ImageOps import invert, autocontrast
 
 
 def expand2square(pil_img):
@@ -43,9 +43,9 @@ def maskgen(fname, shape=(256, 256)):
     msk_grids = Image.open(f"{fname_parts[0]}_grids.{fname_parts[1]}").convert('L')
     msk_content = Image.open(f"{fname_parts[0]}_content.{fname_parts[1]}").convert('L')
     
-    msk_axes = expand2square(invert(msk_axes)).resize(shape, resample=Image.LANCZOS)
-    msk_grids = expand2square(invert(msk_grids)).resize(shape, resample=Image.LANCZOS)
-    msk_content = expand2square(invert(msk_content)).resize(shape, resample=Image.LANCZOS)
+    msk_axes = autocontrast(expand2square(invert(msk_axes)).resize(shape, resample=Image.LANCZOS))
+    msk_grids = autocontrast(expand2square(invert(msk_grids)).resize(shape, resample=Image.LANCZOS))
+    msk_content = autocontrast(expand2square(invert(msk_content)).resize(shape, resample=Image.LANCZOS))
     
     os.remove(f"{fname_parts[0]}_axes.{fname_parts[1]}")
     os.remove(f"{fname_parts[0]}_grids.{fname_parts[1]}")
