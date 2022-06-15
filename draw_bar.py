@@ -29,7 +29,7 @@ with tf.device('/device:GPU:0'):
         write_circle_target_data(circle_data[i], f"./data/tactile/t_{i+1}.png", fig_size, draw_grid, tick_step)
         maskgen(f"./data/tactile/t_{i+1}.png")
         
-    metadata_df = serialize_data(metadata, ["x", "y"])
-    metadata_df.to_csv("metadata.csv", index=False)
+    # metadata_df = serialize_data(metadata, ["x", "y"])
+    # metadata_df.to_csv("metadata.csv", index=False)
 
 # !zip -qq -r ./bardata.zip ./data/ ./metadata.csv
