@@ -237,7 +237,7 @@ def generate_circle_bars_two(data):
 def generate_circle_bars_three(data):
     num_bars = len(data["x_values"])
     num_groups = len(data["y_values"])
-    width  = 8.125 # compute_scatter_width(num_groups = num_groups, num_bars = num_bars)
+    width  = 8.125 #compute_scatter_width(num_groups = num_groups, num_bars = num_bars) 
     group_points = []
     
     for i in range(num_groups):
@@ -340,13 +340,11 @@ def write_source_data(data, filepath, figsize=(512, 512), draw_grid=False, tick_
     
 def write_circle_target_data(data, filepath, figsize=(512, 512), draw_grid=False, tick_step=10):
     fig = go.Figure()
-    
     for i in range(len(data)):
         for j in range(len(data[i])):
             fig.add_trace(go.Scatter(x=data[i][j]["x"],
                         y=data[i][j]["y"],
-                        marker = {"size": data[i][j]["widths"],
-                                  
+                        marker = {"size":np.array(data[i][j]["widths"])*np.sqrt(figsize[1]/figsize[0]),          
             "sizemode":'diameter',
             "sizeref": 1,
                                  },
