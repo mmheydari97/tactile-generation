@@ -102,34 +102,37 @@ def draw_pair(color, grid_param=0.4, figsize=(5,5), filename=None, **kwargs):
         postprocessing(f'./tactile/t_{filename}.tiff')
         plt.close('all')
 
-    
-for i in range(2000):
+
+with open("./with_intersection.txt", "r") as f:
+    selected_idxs = np.array(f.read().splitlines(), dtype=int) - 1 
+for i in selected_idxs:
     PLOT_COLOR = "#"+''.join([random.choice('0123456789abcdef') for _ in range(6)])
     GRID_PARAM = random.random()
     FIG_SIZE = random.choices([[5,5], [2.5,5], [5,2.5]], weights=[.5, .25, .25])[0]
     b = np.load(f"./points/{i+1}.npy")
-    pointidx = np.random.randint(10)
-    ps = b[0::b.shape[0]//pointidx,:] if pointidx > 0 else None
+    # pointidx = np.random.randint(10)
+    # ps = b[0::b.shape[0]//pointidx,:] if pointidx > 0 else None
+    ps = np.load(f"./intersections/{i+1}.npy")
     draw_pair(PLOT_COLOR,GRID_PARAM,FIG_SIZE, f"{i+1}", bezier=b, scatter=ps)
     
-for i in range(2000, 3500):
-    PLOT_COLOR = "#"+''.join([random.choice('0123456789abcdef') for _ in range(6)])
-    GRID_PARAM = random.random()
-    FIG_SIZE = random.choices([[5,5], [2.5,5], [5,2.5]], weights=[.5, .25, .25])[0]
+# for i in range(2000, 3500):
+#     PLOT_COLOR = "#"+''.join([random.choice('0123456789abcdef') for _ in range(6)])
+#     GRID_PARAM = random.random()
+#     FIG_SIZE = random.choices([[5,5], [2.5,5], [5,2.5]], weights=[.5, .25, .25])[0]
 
-    ps = generate_polygon(center=(random.random()*2-1, random.random()*2-1),
-                        avg_radius=1.5,
-                        irregularity=0.2,
-                        spikiness=0.1,
-                        num_vertices=np.random.randint(3,10))
-    draw_pair(PLOT_COLOR,GRID_PARAM,FIG_SIZE, f"{i+1}", scatter=ps, polygon=ps)
+#     ps = generate_polygon(center=(random.random()*2-1, random.random()*2-1),
+#                         avg_radius=1.5,
+#                         irregularity=0.2,
+#                         spikiness=0.1,
+#                         num_vertices=np.random.randint(3,10))
+#     draw_pair(PLOT_COLOR,GRID_PARAM,FIG_SIZE, f"{i+1}", scatter=ps, polygon=ps)
 
-for i in range(3500, 5000):
-    PLOT_COLOR = "#"+''.join([random.choice('0123456789abcdef') for _ in range(6)])
-    GRID_PARAM = random.random()
-    FIG_SIZE = random.choices([[5,5], [2.5,5], [5,2.5]], weights=[.5, .25, .25])[0]
-    idx = np.random.randint(2,20)
+# for i in range(3500, 5000):
+#     PLOT_COLOR = "#"+''.join([random.choice('0123456789abcdef') for _ in range(6)])
+#     GRID_PARAM = random.random()
+#     FIG_SIZE = random.choices([[5,5], [2.5,5], [5,2.5]], weights=[.5, .25, .25])[0]
+#     idx = np.random.randint(2,20)
 
-    ps = np.array([[random.random()*100-50, random.random()*100-50] for _ in range(idx)])
-    draw_pair(PLOT_COLOR,GRID_PARAM,FIG_SIZE, f"{i+1}", scatter=ps)
+#     ps = np.array([[random.random()*100-50, random.random()*100-50] for _ in range(idx)])
+#     draw_pair(PLOT_COLOR,GRID_PARAM,FIG_SIZE, f"{i+1}", scatter=ps)
     plt.close('all')
