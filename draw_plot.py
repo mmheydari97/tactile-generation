@@ -1,6 +1,9 @@
 import argparse
+from cProfile import label
 import os
 import random
+import string
+from webbrowser import get
 import numpy as np
 import matplotlib.pyplot as plt
 from tqdm import tqdm
@@ -13,50 +16,57 @@ np_load_old = np.load
 np.load = lambda *a,**k: np_load_old(*a, allow_pickle=True, **k)
 
 
-def draw_pair(color, grid_param=0.4, figsize=(5,5), filename=None, **kwargs):
+def draw_pair(axes=None, grid_param=0.4, legend_param=0.2, figsize=(5,5), filename=None, **kwargs):
     grid_p = np.random.rand() 
+    legend_p = np.random.rand()
+    
     # plot source image
     with plt.style.context('default'):
     
         fig = plt.figure(figsize=figsize)
         ax = plt.gca()
-        bg_color = "#"+''.join([random.choice('0123456789abcdef') for _ in range(6)])
-        ax.set_facecolor(f'{bg_color}11')
+        bg_color = get_rgb_color(0.1)
+        ax.set_facecolor(bg_color)
 
-        ax.spines['right'].set_visible(False)
-        ax.spines['top'].set_visible(False)
-        ax.set_axisbelow(True)
-        ax.spines['left'].set_position('zero')
-        ax.spines['left'].set_zorder(2)
-        ax.spines['left'].set_linewidth(2)
+        lw = random.randint(1,5)
+        tl = max(lw, random.randint(1,5))+1
+        axes(ax, lw=lw, tl=tl)
 
-        ax.spines['bottom'].set_position('zero')
-        ax.spines['bottom'].set_zorder(2)
-        ax.spines['bottom'].set_linewidth(2)
-
-        ax.plot((1), (0), ls="", marker=">", ms=10, color="k",
-        transform=ax.get_yaxis_transform(), clip_on=False, zorder=2)
-        ax.plot((0), (1), ls="", marker="^", ms=10, color="k",
-        transform=ax.get_xaxis_transform(), clip_on=False, zorder=2)
-        ax.tick_params(length=5)
+        fontsize = random.randint(8, 20)
+        plt.xticks(fontsize=fontsize)
+        plt.yticks(fontsize=fontsize)
 
 
         if "bezier" in kwargs:
             b = kwargs["bezier"]
-            plt.plot(b[:,0], b[:,1], c=color, zorder=3)
+            plt.plot(b[:,0], b[:,1], c=get_rgb_color(1), zorder=3, label=get_random_string(10))
 
         if "scatter" in kwargs and kwargs["scatter"] is not None:
             points = kwargs["scatter"]
-            plt.scatter(points[:,0], points[:,1], s=50, c=color, zorder=4)
+            for i in range(1,random.randint(1,4)):
+                plt.scatter(points[::i,0], points[::i,1], s=50, c=get_rgb_color(1), zorder=4, label=get_random_string(10))
 
         if "polygon" in kwargs:
             polygon = kwargs["polygon"]
-            plt.fill(polygon[:,0], polygon[:,1], fc=f"{color}33", ec=color, zorder=3)
+            plt.fill(polygon[:,0], polygon[:,1], fc=get_rgb_color(0.4), ec=get_rgb_color(1), zorder=3, label=get_random_string(10))
 
         if grid_p < grid_param:
-            draw_grids(ax)
+            ls = random.choice(['-', '--', ':', '-.'])
+            lw = random.randint(1,2)
+            draw_grids(ax, color=get_rgb_color(1), linestyle=ls, linewidth=lw, alpha=0.5)
        
+        if legend_p < legend_param:
+            ax.legend()
         
+        if np.random.rand() < legend_param:
+            plt.xlabel(get_random_string(20, min_length=5))
+
+        if np.random.rand() < legend_param:
+            plt.ylabel(get_random_string(20, min_length=5))
+
+        if np.random.rand() < legend_param:
+            plt.title(get_random_string(40, min_length=10))
+
         fig.savefig(f'./source/s_{filename}.png', dpi=75)
         postprocessing(f'./source/s_{filename}.png')
         plt.close('all')
@@ -66,12 +76,6 @@ def draw_pair(color, grid_param=0.4, figsize=(5,5), filename=None, **kwargs):
     with plt.style.context('default'):
         fig = plt.figure(figsize=figsize)
         ax = plt.gca()
-        ax.set_xticklabels('')
-        ax.set_yticklabels('')
-        ax.spines['right'].set_visible(False)
-        ax.spines['top'].set_visible(False)
-        ax.set_axisbelow(True)
-        ax.tick_params(direction='inout', length=20, width=1)
 
         if "bezier" in kwargs:
             b = kwargs["bezier"]
@@ -85,25 +89,22 @@ def draw_pair(color, grid_param=0.4, figsize=(5,5), filename=None, **kwargs):
             polygon = kwargs["polygon"]
             plt.fill(polygon[:,0], polygon[:,1], fc="#ffffff00", ec="w", zorder=0)
 
+        a = axes(ax, lw=2, tl=0)
+        ax.set_axisbelow(True)
+        ax.tick_params(direction='inout', length=20, width=1)
+        ax.set_xticklabels('')
+        ax.set_yticklabels('')
+        ax.spines['right'].set_visible(False)
+        ax.spines['top'].set_visible(False)
         
-        ax.spines['left'].set_position('zero')
-        ax.spines['left'].set_zorder(2)
-        ax.spines['left'].set_linewidth(2)
-        ax.spines['bottom'].set_position('zero')
-        ax.spines['bottom'].set_zorder(2)
-        ax.spines['bottom'].set_linewidth(2)
-
-        ax.plot((1), (0), ls="", marker=">", ms=10, color="k",
-        transform=ax.get_yaxis_transform(), clip_on=False, zorder=2)
-        wr1 = ref(ax.lines[-1])
-        ax.plot((0), (1), ls="", marker="^", ms=10, color="k",
-        transform=ax.get_xaxis_transform(), clip_on=False, zorder=2)
-        wr2 = ref(ax.lines[-1])
         fig.savefig(f'./tactile/t_{filename}_axes.tiff', dpi=75)
         
         ax.tick_params(direction='inout', length=0, width=0, zorder=3)
-        ax.lines.remove(wr1())
-        ax.lines.remove(wr2())
+        
+        if a is not None:
+            for arrow in a:
+                ax.lines.remove(arrow())
+
         for _, item in ax.spines.items():
             item.set_visible(False)
 
@@ -129,6 +130,61 @@ def draw_pair(color, grid_param=0.4, figsize=(5,5), filename=None, **kwargs):
         plt.close('all')
 
 
+def get_rgb_color(alpha=0.1):
+    a = hex(int(alpha*255))
+    return "#"+''.join([random.choice('0123456789abcdef') for _ in range(6)])+a[2:]
+
+def get_figsize(weights):
+    return random.choices([[5,5], [2.5,5], [5,2.5]], weights=weights)[0]
+
+
+def get_random_string(max_length, min_length=1):
+    length = random.randint(min_length, max_length)
+    letters = string.ascii_lowercase
+    return ''.join(random.choice(letters) for _ in range(length))
+
+def draw_arrow_axes(ax, lw=2, tl=5):
+
+    for spine in ax.spines.values():
+        spine.set_zorder(2)
+        spine.set_linewidth(lw)
+
+    ax.spines['right'].set_visible(False)
+    ax.spines['top'].set_visible(False)
+    ax.spines['left'].set_position('zero')
+    ax.spines['bottom'].set_position('zero')
+
+    ax.plot((1), (0), ls="", marker=">", ms=10, color="k",
+    transform=ax.get_yaxis_transform(), clip_on=False, zorder=2)
+    arrow1 = ref(ax.lines[-1])
+
+    ax.plot((0), (1), ls="", marker="^", ms=10, color="k",
+    transform=ax.get_xaxis_transform(), clip_on=False, zorder=2)
+    arrow2 = ref(ax.lines[-1])
+
+    ax.tick_params(length=tl)
+    return arrow1, arrow2
+
+
+def draw_box_axes(ax, lw=2, tl=5):
+    ax.set_axisbelow(True)
+    for spine in ax.spines.values():
+        spine.set_zorder(2)
+        spine.set_linewidth(lw)
+
+    ax.tick_params(length=tl)
+
+def draw_lb_axes(ax, lw=2, tl=5):
+    ax.set_axisbelow(True)
+    for spine in ax.spines.values():
+        spine.set_zorder(2)
+        spine.set_linewidth(lw)
+
+    ax.tick_params(length=tl)
+    ax.spines['right'].set_visible(False)
+    ax.spines['top'].set_visible(False)
+
+
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--cnt_bezier", type=int, default=2000, help="number of bezier curves")
@@ -137,6 +193,7 @@ if __name__ == "__main__":
     parser.add_argument("--p_figsize", nargs=3, type=float, default=[.5, .25, .25], help="figure size probabilities")
     parser.add_argument("--p_1D", type=float, default=0.4, help="probability of 1D bezeir generation")
     parser.add_argument("--p_grid", type=float, default=0.4, help="probability of drawing grid")
+    parser.add_argument("--p_legend", type=float, default=0.2, help="probability of drawing legends")
 
     opt = parser.parse_args()
 
@@ -146,39 +203,46 @@ if __name__ == "__main__":
     lim_bezier = opt.cnt_bezier
     lim_polygon = opt.cnt_bezier + opt.cnt_polygon
     lim_scatter = opt.cnt_bezier + opt.cnt_polygon + opt.cnt_scatter
+    
+    new_data = False
 
     for i in tqdm(range(lim_bezier), desc="bezier curves"):
-        clr = "#"+''.join([random.choice('0123456789abcdef') for _ in range(6)])
-        fig_size = random.choices([[5,5], [2.5,5], [5,2.5]], weights=opt.p_figsize)[0]
+        clr = get_rgb_color(1)
+        fig_size = get_figsize(opt.p_figsize)
         
-        # uncomment to generate fresh bezier data
-        # x = np.linspace(0, 1, 10000).reshape(-1,1)
-        # p = np.array([[random.randint(-20,20), random.randint(-20,20)] for i in range(random.randint(2,20))])
-        # if random.random() <= opt.p_1D:
-        #     p = p.reshape(-1,1).flatten()[::2]
-        # b = generate_bezier(x, p)
-        
-        b = np.load(f"./points/{i+1}.npy")
+        if new_data:
+            x = np.linspace(0, 1, 10000).reshape(-1,1)
+            p = np.array([[random.randint(-20,20), random.randint(-20,20)] for i in range(random.randint(2,20))])
+            if random.random() <= opt.p_1D:
+                p = p.reshape(-1,1).flatten()[::2]
+            b = generate_bezier(x, p)
+        else:
+            b = np.load(f"./points/{i+1}.npy")
+
         pointidx = np.random.randint(10)
         ps = b[0::b.shape[0]//pointidx,:] if pointidx > 0 else None
-        draw_pair(clr,opt.p_grid,fig_size, f"{i+1}", bezier=b, scatter=ps)
+        axes_method = random.choices([draw_arrow_axes, draw_box_axes, draw_lb_axes], weights=[.5, .25, .25])[0]
+        draw_pair(axes_method,opt.p_grid,opt.p_legend,fig_size, f"{i+1}", bezier=b, scatter=ps)
 
         
     for i in tqdm(range(lim_bezier, lim_polygon), desc="polygons"):
-        clr = "#"+''.join([random.choice('0123456789abcdef') for _ in range(6)])
-        fig_size = random.choices([[5,5], [2.5,5], [5,2.5]], weights=opt.p_figsize)[0]
+        clr = get_rgb_color(1)
+        fig_size = get_figsize(opt.p_figsize)
 
         ps = generate_polygon(center=(random.random()*2-1, random.random()*2-1),
                             avg_radius=1.5,
                             irregularity=0.2,
                             spikiness=0.1,
                             num_vertices=np.random.randint(3,10))
-        draw_pair(clr,opt.p_grid,fig_size, f"{i+1}", scatter=ps, polygon=ps)
+
+        axes_method = random.choices([draw_arrow_axes, draw_box_axes, draw_lb_axes], weights=[.5, .25, .25])[0]
+        draw_pair(axes_method,opt.p_grid,opt.p_legend,fig_size, f"{i+1}", scatter=ps, polygon=ps)
 
 
     for i in tqdm(range(lim_polygon, lim_scatter), desc="scatter plots"):
-        clr = "#"+''.join([random.choice('0123456789abcdef') for _ in range(6)])
-        fig_size = random.choices([[5,5], [2.5,5], [5,2.5]], weights=opt.p_figsize)[0]
+        clr = get_rgb_color(1)
+        fig_size = get_figsize(opt.p_figsize)
         idx = np.random.randint(2,20)
         ps = np.array([[random.random()*100-50, random.random()*100-50] for _ in range(idx)])
-        draw_pair(clr,opt.p_grid,fig_size, f"{i+1}", scatter=ps)
+        axes_method = random.choices([draw_arrow_axes, draw_box_axes, draw_lb_axes], weights=[.5, .25, .25])[0]
+        draw_pair(axes_method,opt.p_grid,opt.p_legend,fig_size, f"{i+1}", scatter=ps)
