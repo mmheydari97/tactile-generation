@@ -11,6 +11,7 @@ from weakref import ref
 
 from utils import draw_grids, postprocessing, maskgen
 from polygon_gen import generate_polygon
+from bezier_generator import generate_bezier 
 
 np_load_old = np.load
 np.load = lambda *a,**k: np_load_old(*a, allow_pickle=True, **k)
@@ -43,8 +44,9 @@ def draw_pair(axes=None, grid_param=0.4, legend_param=0.2, figsize=(5,5), filena
 
         if "scatter" in kwargs and kwargs["scatter"] is not None:
             points = kwargs["scatter"]
-            for i in range(1,random.randint(1,4)):
+            for i in range(1,random.randint(2,5)):
                 plt.scatter(points[::i,0], points[::i,1], s=50, c=get_rgb_color(1), zorder=4, label=get_random_string(10))
+            
 
         if "polygon" in kwargs:
             polygon = kwargs["polygon"]
@@ -131,8 +133,23 @@ def draw_pair(axes=None, grid_param=0.4, legend_param=0.2, figsize=(5,5), filena
 
 
 def get_rgb_color(alpha=0.1):
+    
+    def extract_rgb(color_string):
+        r = int(f'0x{color_string[1:3]}',16)
+        g = int(f'0x{color_string[3:5]}',16)
+        b = int(f'0x{color_string[5:7]}',16)
+        return (r,g,b)
+
+
     a = hex(int(alpha*255))
+    base = "#ffffff"
+    r,g,b = extract_rgb(base)
+    while r+g+b>600:
+        base = "#"+''.join([random.choice('0123456789abcdef') for _ in range(6)])
+        r,g,b = extract_rgb(base)
+
     return "#"+''.join([random.choice('0123456789abcdef') for _ in range(6)])+a[2:]
+
 
 def get_figsize(weights):
     return random.choices([[5,5], [2.5,5], [5,2.5]], weights=weights)[0]
@@ -204,7 +221,7 @@ if __name__ == "__main__":
     lim_polygon = opt.cnt_bezier + opt.cnt_polygon
     lim_scatter = opt.cnt_bezier + opt.cnt_polygon + opt.cnt_scatter
     
-    new_data = False
+    new_data = True
 
     for i in tqdm(range(lim_bezier), desc="bezier curves"):
         clr = get_rgb_color(1)
