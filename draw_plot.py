@@ -17,9 +17,10 @@ np_load_old = np.load
 np.load = lambda *a,**k: np_load_old(*a, allow_pickle=True, **k)
 
 
-def draw_pair(axes=None, grid_param=0.4, legend_param=0.2, figsize=(5,5), filename=None, **kwargs):
+def draw_pair(axes=None, grid_param=0.4, legend_param=0.2, gscale_param=0.2, figsize=(5,5), filename=None, **kwargs):
     grid_p = np.random.rand() 
     legend_p = np.random.rand()
+    gscale_p = np.random.rand()
     
     # plot source image
     with plt.style.context('default'):
@@ -70,7 +71,7 @@ def draw_pair(axes=None, grid_param=0.4, legend_param=0.2, figsize=(5,5), filena
             plt.title(get_random_string(40, min_length=10))
 
         fig.savefig(f'./source/s_{filename}.png', dpi=75)
-        postprocessing(f'./source/s_{filename}.png')
+        postprocessing(f'./source/s_{filename}.png', gray=(gscale_p < gscale_param))
         plt.close('all')
 
 
@@ -270,7 +271,7 @@ if __name__ == "__main__":
         pointidx = np.random.randint(10)
         ps = b[0::b.shape[0]//pointidx,:] if pointidx > 0 else None
         axes_method = random.choices([draw_arrow_axes, draw_box_axes, draw_lb_axes], weights=[.5, .25, .25])[0]
-        draw_pair(axes_method,opt.p_grid,opt.p_legend,fig_size, f"{i+1}", bezier=b, scatter=ps)
+        draw_pair(axes_method,opt.p_grid,opt.p_legend,opt.p_grayscale,fig_size, f"{i+1}", bezier=b, scatter=ps)
 
         
     for i in tqdm(range(lim_bezier, lim_polygon), desc="polygons"):
@@ -284,7 +285,7 @@ if __name__ == "__main__":
                             num_vertices=np.random.randint(3,10))
 
         axes_method = random.choices([draw_arrow_axes, draw_box_axes, draw_lb_axes], weights=[.5, .25, .25])[0]
-        draw_pair(axes_method,opt.p_grid,opt.p_legend,fig_size, f"{i+1}", scatter=ps, polygon=ps)
+        draw_pair(axes_method,opt.p_grid,opt.p_legend,opt.p_grayscale,fig_size, f"{i+1}", scatter=ps, polygon=ps)
 
 
     for i in tqdm(range(lim_polygon, lim_scatter), desc="scatter plots"):
@@ -293,4 +294,4 @@ if __name__ == "__main__":
         idx = np.random.randint(2,20)
         ps = np.array([[random.random()*100-50, random.random()*100-50] for _ in range(idx)])
         axes_method = random.choices([draw_arrow_axes, draw_box_axes, draw_lb_axes], weights=[.5, .25, .25])[0]
-        draw_pair(axes_method,opt.p_grid,opt.p_legend,fig_size, f"{i+1}", scatter=ps)
+        draw_pair(axes_method,opt.p_grid,opt.p_legend,opt.p_grayscale,fig_size, f"{i+1}", scatter=ps)
