@@ -1,8 +1,9 @@
+import os
 import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_agg import FigureCanvasAgg
-from PIL import Image
-from PIL.ImageOps import invert
+from PIL import Image, ImageFilter
+from PIL.ImageOps import invert, autocontrast
 
 
 def expand2square(pil_img):
@@ -42,6 +43,26 @@ def figure2mask(fig, shape=(256, 256), thresh=240):
     im = im.point( lambda p: 0 if p < thresh else 255)
     im = invert(expand2square(im)).resize(shape, resample=Image.LANCZOS).convert("1")
     return np.uint8(im)
+
+
+def maskgen(fname, shape=(256, 256)):
+    fname_parts = fname.rsplit('.', 1)
+    msk_axes = Image.open(f"{fname_parts[0]}_axes.{fname_parts[1]}").convert('L')
+    msk_grids = Image.open(f"{fname_parts[0]}_grids.{fname_parts[1]}").convert('L')
+    msk_content = Image.open(f"{fname_parts[0]}_content.{fname_parts[1]}").convert('L')
+    
+    msk_axes = autocontrast(expand2square(invert(msk_axes)).resize(shape, resample=Image.LANCZOS))
+    msk_grids = autocontrast(expand2square(invert(msk_grids)).resize(shape, resample=Image.LANCZOS))
+    msk_content = autocontrast(expand2square(invert(msk_content)).resize(shape, resample=Image.LANCZOS))
+    
+    os.remove(f"{fname_parts[0]}_axes.{fname_parts[1]}")
+    os.remove(f"{fname_parts[0]}_grids.{fname_parts[1]}")
+    os.remove(f"{fname_parts[0]}_content.{fname_parts[1]}")
+    
+    msk_axes.save(f"{fname_parts[0]}_axes.tiff")
+    msk_grids.save(f"{fname_parts[0]}_grids.tiff")
+    msk_content.save(f"{fname_parts[0]}_content.tiff")
+    
 
 def postprocessing(fname, shape=(256, 256)):
     img = Image.open(fname)
