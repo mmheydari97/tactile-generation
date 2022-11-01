@@ -75,61 +75,90 @@ def draw_pair(axes=None, grid_param=0.4, legend_param=0.2, figsize=(5,5), filena
 
 
     # plot target image
-    with plt.style.context('default'):
-        fig = plt.figure(figsize=figsize)
-        ax = plt.gca()
+    if opt.target == "channelwise":
+        with plt.style.context('default'):
+            fig = plt.figure(figsize=figsize)
+            ax = plt.gca()
 
-        if "bezier" in kwargs:
-            b = kwargs["bezier"]
-            plt.plot(b[:,0], b[:,1], c="w", lw=1, zorder=0)
+            if "bezier" in kwargs:
+                b = kwargs["bezier"]
+                plt.plot(b[:,0], b[:,1], c="w", lw=1, zorder=0)
 
-        if "scatter" in kwargs and kwargs["scatter"] is not None:
-            points = kwargs["scatter"]
-            plt.scatter(points[:,0], points[:,1], s=1, c="w", zorder=0)
+            if "scatter" in kwargs and kwargs["scatter"] is not None:
+                points = kwargs["scatter"]
+                plt.scatter(points[:,0], points[:,1], s=1, c="w", zorder=0)
 
-        if "polygon" in kwargs:
-            polygon = kwargs["polygon"]
-            plt.fill(polygon[:,0], polygon[:,1], fc="#ffffff00", ec="w", zorder=0)
+            if "polygon" in kwargs:
+                polygon = kwargs["polygon"]
+                plt.fill(polygon[:,0], polygon[:,1], fc="#ffffff00", ec="w", zorder=0)
 
-        a = axes(ax, lw=2, tl=0)
-        ax.set_axisbelow(True)
-        ax.tick_params(direction='inout', length=20, width=1)
-        ax.set_xticklabels('')
-        ax.set_yticklabels('')
-        ax.spines['right'].set_visible(False)
-        ax.spines['top'].set_visible(False)
-        
-        fig.savefig(f'./tactile/t_{filename}_axes.tiff', dpi=75)
-        
-        ax.tick_params(direction='inout', length=0, width=0, zorder=3)
-        
-        if a is not None:
-            for arrow in a:
-                ax.lines.remove(arrow())
+            a = axes(ax, lw=2, tl=0)
+            ax.set_axisbelow(True)
+            ax.tick_params(direction='inout', length=20, width=1)
+            ax.set_xticklabels('')
+            ax.set_yticklabels('')
+            ax.spines['right'].set_visible(False)
+            ax.spines['top'].set_visible(False)
+            
+            fig.savefig(f'./tactile/t_{filename}_axes.tiff', dpi=75)
+            
+            ax.tick_params(direction='inout', length=0, width=0, zorder=3)
+            
+            if a is not None:
+                for arrow in a:
+                    ax.lines.remove(arrow())
 
-        for _, item in ax.spines.items():
-            item.set_visible(False)
+            for _, item in ax.spines.items():
+                item.set_visible(False)
 
-        if grid_p < grid_param:
-            draw_grids(ax, color='k', linestyle='--', linewidth=1)
-        
-        fig.savefig(f'./tactile/t_{filename}_grids.tiff', dpi=75)
-        plt.grid(False)
-
-
-        if "bezier" in kwargs:
-            plt.plot(b[:,0], b[:,1], clip_on=False, c='k', lw=4, zorder=3)
-        if "scatter" in kwargs and kwargs["scatter"] is not None:
-            plt.scatter(points[:,0], points[:,1], s=300, c='k', ec='w', lw=5, zorder=4)
-
-        if "polygon" in kwargs:
-            polygon = kwargs["polygon"]
-            plt.fill(polygon[:,0], polygon[:,1], fc="#ffffff00", ec='k', lw=4, zorder=3)
+            if grid_p < grid_param:
+                draw_grids(ax, color='k', linestyle='--', linewidth=1)
+            
+            fig.savefig(f'./tactile/t_{filename}_grids.tiff', dpi=75)
+            plt.grid(False)
 
 
-        fig.savefig(f'./tactile/t_{filename}_content.tiff', dpi=75)
-        maskgen(f'./tactile/t_{filename}.tiff')
-        plt.close('all')
+            if "bezier" in kwargs:
+                plt.plot(b[:,0], b[:,1], clip_on=False, c='k', lw=4, zorder=3)
+            if "scatter" in kwargs and kwargs["scatter"] is not None:
+                plt.scatter(points[:,0], points[:,1], s=300, c='k', ec='w', lw=5, zorder=4)
+
+            if "polygon" in kwargs:
+                polygon = kwargs["polygon"]
+                plt.fill(polygon[:,0], polygon[:,1], fc="#ffffff00", ec='k', lw=4, zorder=3)
+
+
+            fig.savefig(f'./tactile/t_{filename}_content.tiff', dpi=75)
+            maskgen(f'./tactile/t_{filename}.tiff')
+            plt.close('all')
+    else:
+        with plt.style.context('default'):
+            fig = plt.figure(figsize=figsize)
+            ax = plt.gca()
+            a = axes(ax, lw=2, tl=0)
+            ax.set_axisbelow(True)
+            ax.tick_params(direction='inout', length=20, width=1)
+            ax.set_xticklabels('')
+            ax.set_yticklabels('')
+            ax.spines['right'].set_visible(False)
+            ax.spines['top'].set_visible(False)
+
+            if "bezier" in kwargs:
+                plt.plot(b[:,0], b[:,1], clip_on=False, c='r', lw=4, zorder=3)
+            if "scatter" in kwargs and kwargs["scatter"] is not None:
+                plt.scatter(points[:,0], points[:,1], s=300, c='r', ec='w', lw=5, zorder=4)
+
+            if "polygon" in kwargs:
+                polygon = kwargs["polygon"]
+                plt.fill(polygon[:,0], polygon[:,1], fc="#ffffff00", ec='r', lw=4, zorder=3)
+
+            if grid_p < grid_param:
+                draw_grids(ax, color='b', linestyle='--', linewidth=1)
+
+
+            fig.savefig(f'./tactile/t_{filename}.tiff', dpi=300)
+            postprocessing(f'./tactile/t_{filename}.tiff')
+            plt.close('all')
 
 
 def get_rgb_color(alpha=0.1):
@@ -204,6 +233,7 @@ def draw_lb_axes(ax, lw=2, tl=5):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
+    parser.add_argument('--target', type=str, choices=['rgb', 'channelwise'], default='rgb', help='type of target domain')
     parser.add_argument("--cnt_bezier", type=int, default=2000, help="number of bezier curves")
     parser.add_argument("--cnt_scatter", type=int, default=1500, help="number of scatter points")
     parser.add_argument("--cnt_polygon", type=int, default=1500, help="number of polygons")
@@ -211,6 +241,7 @@ if __name__ == "__main__":
     parser.add_argument("--p_1D", type=float, default=0.4, help="probability of 1D bezeir generation")
     parser.add_argument("--p_grid", type=float, default=0.4, help="probability of drawing grid")
     parser.add_argument("--p_legend", type=float, default=0.2, help="probability of drawing legends")
+    parser.add_argument("--p_grayscale", type=float, default=0.2, help="probability of grayscale source domain")
 
     opt = parser.parse_args()
 
