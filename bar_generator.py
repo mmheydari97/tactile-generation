@@ -1,12 +1,4 @@
-# !pip install retrying
-# !pip install kaleido
-# !pip install plotly==5.8
-
-import os
-import shutil
-
 import numpy as np
-import pandas as pd
 import retrying
 import tensorflow as tf
 from tqdm import tqdm
@@ -373,25 +365,4 @@ def write_circle_target_data(data, filepath, figsize=(512, 512), draw_grid=False
     fig.update_traces(mode='markers', marker_line_width=2, marker_color="white", marker_line_color="black", visible=True)
     fig.update_layout(yaxis={"showgrid":False})
     pio.write_image(fig=fig, file=f"{fp_parts[0]}_content.{fp_parts[1]}", format="png", width=figsize[0], height=figsize[1])
-
-# Convert data to numpy dataframe
-def serialize_data(data, headers):
-    df = {}
-    
-    for h in headers:
-        df[h] = []
-    
-    for d in data:
-        for h in d: 
-            val_str = ""
-            if h == "x":
-                val_str +=  ", ".join(map(str, d[h]))
-                val_str += " ."
-            else:
-                for vals in d[h]:
-                    val_str +=  ", ".join(map(str, vals))
-                    val_str += " ."
-            df[h].append(val_str)
-            
-    return pd.DataFrame(df)
 

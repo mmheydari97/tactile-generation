@@ -39,17 +39,13 @@ plt.plot(b[:,0], b[:,1])
 xlimits = plt.xlim()
 ylimits = plt.ylim()
 
-# i1 = (193, 94)
-# i2 = (137, 118)
-i3 = (145, 129)
-
-
-img.putpixel(i3, (255,0,0))
+points = [(193, 94), (137, 118), (145, 129)]
+for p in points:
+    img.putpixel(p, (255,0,0))
 img.show()
 
-
-x_int = (i3[0] - zero[0])/(x_max[0]-(zero[0]-1))*(xlimits[1]-xlimits[0])+xlimits[0]
-y_int = (i3[1] - zero[1])/((y_max[1]-1) - zero[1])*(ylimits[1]-ylimits[0])+ylimits[0]
-
-plt.scatter(x_int, y_int, s=100, edgecolors='w', lw=6, zorder=2)
+for p in points:
+    x_int = (p[0] - zero[0])/(x_max[0]-(zero[0]-1))*(xlimits[1]-xlimits[0])+xlimits[0]
+    y_int = (p[1] - zero[1])/((y_max[1]-1) - zero[1])*(ylimits[1]-ylimits[0])+ylimits[0]
+    plt.scatter(x_int, y_int, s=100, edgecolors='w', lw=6, zorder=2)
 plt.show()

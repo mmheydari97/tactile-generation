@@ -1,15 +1,12 @@
 import argparse
-from cProfile import label
 import os
 import random
-import string
-from webbrowser import get
 import numpy as np
 import matplotlib.pyplot as plt
 from tqdm import tqdm
 from weakref import ref
 
-from utils import draw_grids, postprocessing, maskgen
+from utils import draw_grids, postprocessing, maskgen, get_figsize, get_rgb_color, get_random_string
 from polygon_gen import generate_polygon
 from bezier_generator import generate_bezier 
 
@@ -19,7 +16,6 @@ np.load = lambda *a,**k: np_load_old(*a, allow_pickle=True, **k)
 
 def draw_pair(axes=None, grid_param=0.4, legend_param=0.2, gscale_param=0.2, figsize=(5,5), filename=None, **kwargs):
     grid_p = np.random.rand() 
-    legend_p = np.random.rand()
     gscale_p = np.random.rand()
     
     # plot source image
@@ -58,7 +54,7 @@ def draw_pair(axes=None, grid_param=0.4, legend_param=0.2, gscale_param=0.2, fig
             lw = random.randint(1,2)
             draw_grids(ax, color=get_rgb_color(1), linestyle=ls, linewidth=lw, alpha=0.5)
        
-        if legend_p < legend_param:
+        if np.random.rand() < legend_param:
             ax.legend()
         
         if np.random.rand() < legend_param:
@@ -161,34 +157,6 @@ def draw_pair(axes=None, grid_param=0.4, legend_param=0.2, gscale_param=0.2, fig
             postprocessing(f'./tactile/t_{filename}.tiff')
             plt.close('all')
 
-
-def get_rgb_color(alpha=0.1):
-    
-    def extract_rgb(color_string):
-        r = int(f'0x{color_string[1:3]}',16)
-        g = int(f'0x{color_string[3:5]}',16)
-        b = int(f'0x{color_string[5:7]}',16)
-        return (r,g,b)
-
-
-    a = hex(int(alpha*255))
-    base = "#ffffff"
-    r,g,b = extract_rgb(base)
-    while r+g+b>600:
-        base = "#"+''.join([random.choice('0123456789abcdef') for _ in range(6)])
-        r,g,b = extract_rgb(base)
-
-    return "#"+''.join([random.choice('0123456789abcdef') for _ in range(6)])+a[2:]
-
-
-def get_figsize(weights):
-    return random.choices([[5,5], [2.5,5], [5,2.5]], weights=weights)[0]
-
-
-def get_random_string(max_length, min_length=1):
-    length = random.randint(min_length, max_length)
-    letters = string.ascii_lowercase
-    return ''.join(random.choice(letters) for _ in range(length))
 
 def draw_arrow_axes(ax, lw=2, tl=5):
 

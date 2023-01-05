@@ -1,8 +1,8 @@
+import random
+import string
 import os
-import numpy as np
 import matplotlib.pyplot as plt
-from matplotlib.backends.backend_agg import FigureCanvasAgg
-from PIL import Image, ImageFilter
+from PIL import Image
 from PIL.ImageOps import invert, autocontrast
 
 
@@ -23,6 +23,35 @@ def expand2square(pil_img):
 def draw_grids(ax, **kwargs):
     ax.set_zorder(0)
     plt.grid(which='both', axis='both', **kwargs)
+
+
+def get_rgb_color(alpha=0.1):
+    
+    def extract_rgb(color_string):
+        r = int(f'0x{color_string[1:3]}',16)
+        g = int(f'0x{color_string[3:5]}',16)
+        b = int(f'0x{color_string[5:7]}',16)
+        return (r,g,b)
+
+
+    a = hex(int(alpha*255))
+    base = "#ffffff"
+    r,g,b = extract_rgb(base)
+    while r+g+b>600:
+        base = "#"+''.join([random.choice('0123456789abcdef') for _ in range(6)])
+        r,g,b = extract_rgb(base)
+
+    return "#"+''.join([random.choice('0123456789abcdef') for _ in range(6)])+a[2:]
+
+
+def get_figsize(weights):
+    return random.choices([[5,5], [2.5,5], [5,2.5]], weights=weights)[0]
+
+
+def get_random_string(max_length, min_length=1):
+    length = random.randint(min_length, max_length)
+    letters = string.ascii_lowercase
+    return ''.join(random.choice(letters) for _ in range(length))
 
 
 def maskgen(fname, shape=(256, 256)):

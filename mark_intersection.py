@@ -4,7 +4,6 @@ import matplotlib.pyplot as plt
 
 cross = []
 def on_press(event):
-    # print("my position:" ,event.button,event.xdata, event.ydata)
     
     if str(event.button) == "MouseButton.LEFT":
         cross.append([event.xdata, event.ydata])
