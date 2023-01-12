@@ -15,7 +15,7 @@ os.makedirs("./data/tactile", exist_ok=True)
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument('--target', type=str, choices=['rgb', 'channelwise'], default='rgb', help='type of target domain')
-    parser.add_argument("--cnt_bar", type=int, default=20, help="number of bezier curves")
+    parser.add_argument("--cnt_bar", type=int, default=5000, help="number of bezier curves")
     parser.add_argument("--p_figsize", nargs=3, type=float, default=[0.5, .25, .25], help="figure size probabilities")
     parser.add_argument("--p_grid", type=float, default=0.4, help="probability of drawing grid")
     parser.add_argument("--p_legend", type=float, default=0.25, help="probability of drawing legends")
