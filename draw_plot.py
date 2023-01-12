@@ -67,7 +67,7 @@ def draw_pair(axes=None, grid_param=0.4, legend_param=0.2, gscale_param=0.2, fig
             plt.title(get_random_string(40, min_length=10))
 
         fig.savefig(f'./source/s_{filename}.png', dpi=75)
-        postprocessing(f'./source/s_{filename}.png', gray=(gscale_p < gscale_param))
+        postprocessing(f'./source/s_{filename}.png', gray=(gscale_p < gscale_param),format='png')
         plt.close('all')
 
 
@@ -154,7 +154,7 @@ def draw_pair(axes=None, grid_param=0.4, legend_param=0.2, gscale_param=0.2, fig
 
 
             fig.savefig(f'./tactile/t_{filename}.tiff', dpi=300)
-            postprocessing(f'./tactile/t_{filename}.tiff')
+            postprocessing(f'./tactile/t_{filename}.tiff', format='tiff')
             plt.close('all')
 
 
@@ -210,7 +210,7 @@ if __name__ == "__main__":
     parser.add_argument("--p_1D", type=float, default=0.4, help="probability of 1D bezeir generation")
     parser.add_argument("--p_grid", type=float, default=0.4, help="probability of drawing grid")
     parser.add_argument("--p_legend", type=float, default=0.2, help="probability of drawing legends")
-    parser.add_argument("--p_grayscale", type=float, default=0.2, help="probability of grayscale source domain")
+    parser.add_argument("--p_grayscale", type=float, default=0, help="probability of grayscale source domain")
 
     opt = parser.parse_args()
 

@@ -6,6 +6,8 @@ from tqdm import tqdm
 import plotly.graph_objs as go
 import plotly.io as pio
 import plotly.io._orca
+import random
+from utils import get_rgb_color, get_random_string
 
 tf.get_logger().setLevel('ERROR')
 
@@ -293,76 +295,204 @@ def generate_styles(num_bars, num_groups, min_x, max_x, min_y, max_y):
     return styles
 
 # Draw source domain
-def write_source_data(data, filepath, figsize=(512, 512), draw_grid=False, tick_step=10):
+def write_source_data(data, filepath, figsize=(512, 512), draw_grid=False, tick_step=10, orientation='v', p_legend=0):
     fig = go.Figure()
 
     for r in range(len(data["y_values"])):
-        fig.add_trace(go.Bar(x=data["x_values"],
-                        y=data["y_values"][r],
-                        marker_color=data["marker_colors_rgba"][r] if len(data["y_values"]) > 1 else data["marker_colors_rgba"],
-                        marker_line_width=2
-                        ))
-    fig.update_layout(
-        margin=dict(l=5, r=25, t=30, b=25),
-        plot_bgcolor=data["plot_bg_color_rgba"],
-        width=figsize[0], height=figsize[1],
-        yaxis_range=[0,110],
-        bargap=data["bargap"],
-        bargroupgap=data["bargroupgap"],
-        showlegend=False,
-        xaxis={
+        if orientation == 'v':
+            trace_args = {
+                'x': data["x_values"],
+                'y': data["y_values"][r],
+                'orientation': "v",
+                'marker_color': data["marker_colors_rgba"][r] if len(data["y_values"]) > 1 else data["marker_colors_rgba"],
+                'marker_line_width': 2
+                }
+        else:
+            trace_args = {
+                'x': data["y_values"][r],
+                'y': data["x_values"],
+                'orientation': "h",
+                'marker_color': data["marker_colors_rgba"][r] if len(data["y_values"]) > 1 else data["marker_colors_rgba"],
+                'marker_line_width': 2
+            }
+
+        fig.add_trace(go.Bar(**trace_args))
+    
+    axis_lw = random.randint(1,5)
+    if orientation == 'v':
+        layout_args = {
+            'margin': dict(l=5, r=25, t=30, b=25),
+            'plot_bgcolor': data["plot_bg_color_rgba"],
+            'width': figsize[0],
+            'height': figsize[1],
+            'xaxis_range': [-0.5,10],
+            'yaxis_range': [0,110],
+            'bargap': data["bargap"],
+            'bargroupgap': data["bargroupgap"],
+            'showlegend': False,
+            'xaxis': {
                 "showline": True, 
-                "linewidth": 2, 
+                "linewidth": axis_lw, 
                 "linecolor": 'black',
             },
-        yaxis={
+            'yaxis': {
                 "showline": True, 
-                "linewidth": 2, 
+                "linewidth": axis_lw, 
                 "linecolor": 'black',
                 "ticks": "outside",
                 "dtick": tick_step
-            })
-            
+            }
+        }
+    else:
+        layout_args = {
+            'margin': dict(l=25, r=30, t=5, b=25),
+            'plot_bgcolor': data["plot_bg_color_rgba"],
+            'width':figsize[0],
+            'height': figsize[1],
+            'yaxis_range': [-0.5,10],
+            'xaxis_range': [0,110],
+            'bargap': data["bargap"],
+            'bargroupgap': data["bargroupgap"],
+            'showlegend': False,
+            'xaxis': {
+                "showline": True, 
+                "linewidth": axis_lw, 
+                "linecolor": 'black',
+                "dtick": tick_step
+            },
+            'yaxis':{
+                "showline": True, 
+                "linewidth": axis_lw, 
+                "linecolor": 'black',
+                "ticks": "outside",
+            }
+        }
+
+    fig.update_layout(**layout_args)
+    
+
     fig.update_yaxes(showgrid=False)
     if draw_grid:
-        fig.update_yaxes(showgrid=True, gridcolor='#aaaaaa', gridwidth=1)
+        ls = random.choice(['solid', 'dot', 'dash', 'longdash', 'dashdot', 'longdashdot'])
+        lw = random.randint(1,2)
+        if orientation == 'v':
+            fig.update_yaxes(showgrid=True, gridcolor=get_rgb_color(1)[:-2], gridwidth=lw, griddash=ls)
+        else:
+            fig.update_xaxes(showgrid=True, gridcolor=get_rgb_color(1)[:-2], gridwidth=lw, griddash=ls)
+    
+    if random.random() < p_legend:
+        fig.update_layout(title_text=get_random_string(40, min_length=10),
+        title_x=random.uniform(0.0,0.9),
+        title_y=1,
+    	title_font_size= random.randint(25,35)
+        )
+    # if random.random() < p_legend:
+    #     fig.update_layout(
+    #         xaxis_title = get_random_string(20, 5),
+    #         font = {
+    #             "size": int(random.randint(15, 25)),
+    #             "color": get_rgb_color(1)[:-2]
+    #         }
+    #     )
+    # if random.random() < p_legend:
+    #     fig.update_layout(
+    #         yaxis_title = get_random_string(20, 5),
+    #         font = {
+    #             "size": int(random.randint(15, 25)),
+    #             "color": get_rgb_color(1)[:-2]
+    #         }
+    #     )
 
     pio.write_image(fig=fig, file=filepath, format="png", width=figsize[0], height=figsize[1])
     
     
-def write_circle_target_data(data, filepath, figsize=(512, 512), draw_grid=False, tick_step=10):
+def write_circle_target_data(data, filepath, figsize=(512, 512), draw_grid=False, tick_step=10, target='rgb', orientation='v'):
     fig = go.Figure()
     for i in range(len(data)):
         for j in range(len(data[i])):
-            fig.add_trace(go.Scatter(x=data[i][j]["x"],
-                        y=data[i][j]["y"],
-                        marker = {"size":np.array(data[i][j]["widths"])*np.sqrt(figsize[1]/figsize[0]),          
-            "sizemode":'diameter',
-            "sizeref": 1,
-                                 },
-                        ))
+            if orientation == 'v':
+                trace_args={
+                    'x': data[i][j]["x"],
+                    'y': data[i][j]["y"],
+                    'marker': {
+                            "size":np.array(data[i][j]["widths"])*np.sqrt(figsize[1]/figsize[0]),
+                            "sizemode":'diameter',
+                            "sizeref": 1
+                        },
+                    }
+
+            else:
+                trace_args={
+                    'x': data[i][j]["y"],
+                    'y': data[i][j]["x"],
+                    'marker': {
+                        "size":np.array(data[i][j]["widths"])*np.sqrt(figsize[0]/figsize[1]),        
+                        "sizemode":'diameter',
+                        "sizeref": 1,
+                    },
+                }
+
+            fig.add_trace(go.Scatter(**trace_args))
     
     fig.update_traces(mode='markers', marker_line_width=1, visible=False)
 
     fp_parts = filepath.rsplit(".", 1)
-    fig.update_layout(
-        plot_bgcolor="white",
-        margin=dict(l=30, r=30, t=30, b=30),
-        width=figsize[0], height=figsize[1],
-        yaxis_range=[0,110],
-        xaxis_range=[-0.5,10],
-        xaxis={"showticklabels": False, "linewidth": 2, "linecolor": 'black'},
-        yaxis={"showticklabels": False, "linewidth": 2, "linecolor": 'black', "ticks": "outside", "dtick": tick_step, "ticklen": 10, "tickwidth": 2},
-        showlegend=False
-    )    
-    pio.write_image(fig=fig, file=f"{fp_parts[0]}_axes.{fp_parts[1]}", format="png", width=figsize[0], height=figsize[1])
+    if orientation == 'v':
+        layout_args = {
+        'plot_bgcolor': "white",
+        'margin': dict(l=30, r=30, t=30, b=30),
+        'width': figsize[0],
+        'height': figsize[1],
+        'yaxis_range': [0,110],
+        'xaxis_range': [-0.5,10],
+        'xaxis': {"showticklabels": False, "linewidth": 2, "linecolor": 'black'},
+        'yaxis': {"showticklabels": False, "linewidth": 2, "linecolor": 'black', "ticks": "outside", "dtick": tick_step, "ticklen": 10, "tickwidth": 2},
+        'showlegend':False
+        }
+    else:
+        layout_args = {
+            'plot_bgcolor': "white",
+        'margin': dict(l=30, r=30, t=30, b=30),
+        'width': figsize[0], 
+        'height': figsize[1],
+        'xaxis_range': [0,110],
+        'yaxis_range': [-0.5,10],
+        'yaxis': {"showticklabels": False, "linewidth": 2, "linecolor": 'black'},
+        'xaxis': {"showticklabels": False, "linewidth": 2, "linecolor": 'black', "ticks": "outside", "dtick": tick_step, "ticklen": 10, "tickwidth": 2},
+        'showlegend': False
+        }
 
-    if draw_grid:
-        fig.update_yaxes(showgrid=True, gridcolor='black', griddash='dash', gridwidth=1)
-    fig.update_layout(xaxis={"linecolor": 'white'}, yaxis={"linecolor": 'white', "ticklen": 0, "tickwidth": 0})
-    pio.write_image(fig=fig, file=f"{fp_parts[0]}_grids.{fp_parts[1]}", format="png", width=figsize[0], height=figsize[1])
+    fig.update_layout(layout_args)
+    
+    if orientation == 'v':
+        fig.update_layout(yaxis={"ticks": "outside", "dtick": tick_step, "ticklen": 10, "tickwidth": 2})
+    else:
+        fig.update_layout(xaxis={"ticks": "outside", "dtick": tick_step, "ticklen": 10, "tickwidth": 2})    
 
-    fig.update_traces(mode='markers', marker_line_width=2, marker_color="white", marker_line_color="black", visible=True)
-    fig.update_layout(yaxis={"showgrid":False})
-    pio.write_image(fig=fig, file=f"{fp_parts[0]}_content.{fp_parts[1]}", format="png", width=figsize[0], height=figsize[1])
+    if target == 'rgb':
+        if draw_grid:
+            if orientation == 'v':
+                fig.update_yaxes(showgrid=True, gridcolor='blue', griddash='dash', gridwidth=1)
+            else:
+                fig.update_xaxes(showgrid=True, gridcolor='blue', griddash='dash', gridwidth=1)
+
+        fig.update_traces(mode='markers', marker_line_width=2, marker_color="white", marker_line_color="red", visible=True)
+        pio.write_image(fig=fig, file=f"{fp_parts[0]}.{fp_parts[1]}", format="png", width=figsize[0], height=figsize[1])
+
+    else:
+        pio.write_image(fig=fig, file=f"{fp_parts[0]}_axes.{fp_parts[1]}", format="png", width=figsize[0], height=figsize[1])
+
+        if draw_grid:
+            if orientation == 'v':
+                fig.update_yaxes(showgrid=True, gridcolor='black', griddash='dash', gridwidth=1)
+            else:
+                fig.update_xaxes(showgrid=True, gridcolor='black', griddash='dash', gridwidth=1)
+                
+        fig.update_layout(xaxis={"linecolor": 'white',  "ticklen": 0, "tickwidth": 0}, yaxis={"linecolor": 'white', "ticklen": 0, "tickwidth": 0})
+        pio.write_image(fig=fig, file=f"{fp_parts[0]}_grids.{fp_parts[1]}", format="png", width=figsize[0], height=figsize[1])
+
+        fig.update_traces(mode='markers', marker_line_width=2, marker_color="white", marker_line_color="black", visible=True)
+        fig.update_layout(yaxis={"showgrid":False}, xaxis={"showgrid":False})
+
+        pio.write_image(fig=fig, file=f"{fp_parts[0]}_content.{fp_parts[1]}", format="png", width=figsize[0], height=figsize[1])
 

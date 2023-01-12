@@ -73,9 +73,11 @@ def maskgen(fname, shape=(256, 256)):
     msk_content.save(f"{fname_parts[0]}_content.tiff")
     
 
-def postprocessing(fname, shape=(256, 256),gray=False):
+def postprocessing(fname, shape=(256, 256),gray=False,format='png'):
     img = Image.open(fname)
     img = expand2square(img).resize(shape, resample=Image.LANCZOS)
     if gray:
         img = img.convert('L')
-    img.save(fname)
+    os.remove(fname)
+    img.save(f"{fname.rsplit('.', 1)[0]}.{format}")
+    
