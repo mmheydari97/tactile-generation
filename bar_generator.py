@@ -97,13 +97,13 @@ def generate_marker_colors(num_groups, num_bars):
     
     # Avoid full black or full white
     if num_groups > 1:
-        marker_colors = [(np.random.randint(low=1, high=255), np.random.randint(low=1, high=255), np.random.randint(low=1, high=255), np.round(np.random.uniform(0.5, 1), 2)) for i in range(num_groups)]
+        marker_colors = [(np.random.randint(low=1, high=255), np.random.randint(low=1, high=255), np.random.randint(low=1, high=255), float(np.round(np.random.uniform(0.5, 1), 2))) for i in range(num_groups)]
         marker_colors_as_str = ["rgba" + str(c) for c in marker_colors]  
     elif one_color:
-        marker_colors = (np.random.randint(low=1, high=255), np.random.randint(low=1, high=255), np.random.randint(low=1, high=255), np.round(np.random.uniform(0.5, 1), 2))
+        marker_colors = (np.random.randint(low=1, high=255), np.random.randint(low=1, high=255), np.random.randint(low=1, high=255), float(np.round(np.random.uniform(0.5, 1), 2)))
         marker_colors_as_str = "rgba" + str(marker_colors)
     else:
-        marker_colors = [(np.random.randint(low=1, high=255), np.random.randint(low=1, high=255), np.random.randint(low=1, high=255), np.round(np.random.uniform(0.5, 1), 2)) for i in range(num_bars)]
+        marker_colors = [(np.random.randint(low=1, high=255), np.random.randint(low=1, high=255), np.random.randint(low=1, high=255), float(np.round(np.random.uniform(0.5, 1), 2))) for i in range(num_bars)]
         marker_colors_as_str = ["rgba" + str(c) for c in marker_colors]
         
     return marker_colors, marker_colors_as_str
@@ -149,7 +149,7 @@ def generate_plot_bgcolor():
     if is_white:
         bg_color = (255, 255, 255, 1)
     else:
-        bg_color = (np.random.randint(low=0, high=255 + 1), np.random.randint(low=0, high=255 + 1), np.random.randint(low=0, high=255 + 1), np.round(np.random.uniform(0, 0.35), 2))
+        bg_color = (np.random.randint(low=0, high=255 + 1), np.random.randint(low=0, high=255 + 1), np.random.randint(low=0, high=255 + 1), float(np.round(np.random.uniform(0, 0.35), 2)))
 
     bg_color_rgba = "rgba" + str(bg_color)
     
@@ -160,7 +160,7 @@ def generate_plot_paper_color():
     if is_white:
         paper_color = (255, 255, 255, 1)
     else:
-        paper_color = (np.random.randint(low=0, high=255 + 1), np.random.randint(low=0, high=255 + 1), np.random.randint(low=0, high=255 + 1), np.round(np.random.uniform(0, 0.35), 2))
+        paper_color = (np.random.randint(low=0, high=255 + 1), np.random.randint(low=0, high=255 + 1), np.random.randint(low=0, high=255 + 1), float(np.round(np.random.uniform(0, 0.35), 2)))
 
     paper_color_rgba = "rgba" + str(paper_color)
     
